@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Leaf, Search, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,20 @@ const NavBar = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+    // Listen for changes from other tabs
+    const handler = () => setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    window.location.reload();
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -62,7 +76,10 @@ const NavBar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+            {navItems.filter(item => {
+              if ((item.path === '/dashboard' || item.path === '/add-item') && !isLoggedIn) return false;
+              return true;
+            }).map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
@@ -218,16 +235,25 @@ const NavBar = () => {
               )}
             </div>
 
-            <Link to="/login">
-              <Button variant="outline" size="sm" className="rounded-xl border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-500">
-                Login
+            {!isLoggedIn && (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="rounded-xl border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-500">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button className="purple-button-primary text-sm py-2 px-4">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
+            {isLoggedIn && (
+              <Button variant="outline" size="sm" className="rounded-xl border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-500" onClick={handleLogout}>
+                Logout
               </Button>
-            </Link>
-            <Link to="/signup">
-              <Button className="purple-button-primary text-sm py-2 px-4">
-                Sign Up
-              </Button>
-            </Link>
+            )}
           </div>
 
           {/* Mobile menu toggle */}
@@ -247,7 +273,10 @@ const NavBar = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-purple-200/50 animate-fade-in">
             <div className="space-y-2">
-              {navItems.map((item) => (
+              {navItems.filter(item => {
+                if ((item.path === '/dashboard' || item.path === '/add-item') && !isLoggedIn) return false;
+                return true;
+              }).map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -262,16 +291,25 @@ const NavBar = () => {
                 </Link>
               ))}
               <div className="flex items-center space-x-2 pt-4 border-t border-purple-200/50">
-                <Link to="/login" className="flex-1">
-                  <Button variant="outline" className="w-full rounded-xl border-purple-300 text-purple-600 hover:bg-purple-50">
-                    Login
+                {!isLoggedIn && (
+                  <>
+                    <Link to="/login" className="flex-1">
+                      <Button variant="outline" className="w-full rounded-xl border-purple-300 text-purple-600 hover:bg-purple-50">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link to="/signup" className="flex-1">
+                      <Button className="w-full purple-button-primary">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </>
+                )}
+                {isLoggedIn && (
+                  <Button variant="outline" className="w-full rounded-xl border-purple-300 text-purple-600 hover:bg-purple-50" onClick={handleLogout}>
+                    Logout
                   </Button>
-                </Link>
-                <Link to="/signup" className="flex-1">
-                  <Button className="w-full purple-button-primary">
-                    Sign Up
-                  </Button>
-                </Link>
+                )}
               </div>
             </div>
           </div>
