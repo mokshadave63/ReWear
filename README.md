@@ -72,11 +72,11 @@ git clone https://github.com/yourusername/rewear.git
 cd rewear
 
 2. Install Backend Dependencies
-cd server
+cd backend
 npm install
 
 3. Install Frontend Dependencies
-cd ../client
+cd frontend
 npm install
 
 4. Start the Backend
