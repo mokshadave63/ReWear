@@ -84,5 +84,5 @@ cd server
 npm run dev
 
 5. Start the Frontend
-cd ../client
+cd frontend
 npm run dev
