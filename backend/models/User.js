@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
   points: {
     type: Number,
     default: 0
+  },
+  city: {
+    type: String,
+    trim: true
   }
 }, { timestamps: true });
 
