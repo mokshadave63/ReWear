@@ -52,6 +52,11 @@ const userSchema = new mongoose.Schema({
   points: {
     type: Number,
     default: 100
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
   }
 }, {
   timestamps: true,

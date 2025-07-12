@@ -24,21 +24,56 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // so cookies (jwt) are set
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          rememberMe: formData.rememberMe,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Show error toast
+        toast({
+          title: 'Login failed',
+          description: data?.email || data?.password || data?.message || 'Invalid credentials',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
+      }
+
       toast({
         title: `Welcome back! 💜`,
         description: `You've successfully signed in as ${loginType}.`,
       });
-      
+
+      // Set login flag
+      localStorage.setItem('isLoggedIn', 'true');
+
       // Redirect based on login type
       if (loginType === 'admin') {
         navigate('/admin-dashboard');
       } else {
         navigate('/dashboard');
       }
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: 'Login failed',
+        description: error.message || 'Something went wrong',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const { loginUser } = require('../controllers/authController');
 
 router.post('/signup', async (req, res) => {
   try {
@@ -31,5 +32,7 @@ router.post('/signup', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+router.post('/login', loginUser);
 
 module.exports = router;
