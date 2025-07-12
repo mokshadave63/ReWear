@@ -5,10 +5,10 @@ const itemSchema = new mongoose.Schema({
   description: String,
   images: [String],
   category: String,
-  type: String,
   size: String,
   condition: String,
   tags: [String],
+  points: Number, // ADD THIS
   status: {
     type: String,
     enum: ['available', 'requested', 'redeemed', 'swapped'],
@@ -17,7 +17,7 @@ const itemSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false // TEMPORARILY make it optional if no login
   }
 }, { timestamps: true });
 

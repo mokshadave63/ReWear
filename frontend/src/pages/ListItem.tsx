@@ -74,23 +74,37 @@ const ListItem = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (images.length === 0) {
-      toast.error('Please add at least one image');
-      return;
-    }
-    
-    if (!formData.title || !formData.category || !formData.size || !formData.condition) {
-      toast.error('Please fill in all required fields');
-      return;
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (images.length === 0) {
+    toast.warning('No image uploaded — your item will be listed without pictures.');
+    return;
+  }
+
+  if (!formData.title || !formData.category || !formData.size || !formData.condition) {
+    toast.error('Please fill in all required fields');
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:5000/api/items/list', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...formData,
+        images: images.length > 0 ? images : [],
+        tags: formData.tags
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to list item');
     }
 
-    // Simulate submission
     toast.success('Item listed successfully! It will be reviewed shortly.');
-    
-    // Reset form
     setFormData({
       title: '',
       description: '',
@@ -101,7 +115,11 @@ const ListItem = () => {
       points: ''
     });
     setImages([]);
-  };
+  } catch (err: any) {
+    toast.error(`Listing failed: ${err.message}`);
+  }
+};
+
 
   return (
     <div className="min-h-screen purple-gradient">
