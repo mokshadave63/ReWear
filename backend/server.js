@@ -13,9 +13,12 @@ const app = express();
 app.use(express.json());  
 app.use(cookieParser());  
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'http://localhost:8080',
   credentials: true  
 }));
+
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
 
 // Routes
 app.get('/', (req, res) => res.send('ReWear API is running'));  // Sample route

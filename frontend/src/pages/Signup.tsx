@@ -47,14 +47,65 @@ const Signup = () => {
 
     setIsLoading(true);
 
+
+    console.log("Sending to backend:", {
+  email: formData.email,
+  password: formData.password,
+  phoneNumber: formData.phoneNumber,
+  city: formData.city,
+  state: formData.state,
+  pincode: formData.pincode
+});
+
     // Simulate API call with 100 points initialization
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Welcome to ReWear! 💜",
-        description: "Your account has been created with 100 bonus points!",
-      });
-    }, 1500);
+    try {
+  const response = await fetch('http://localhost:5000/api/auth/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: formData.email,
+      password: formData.password,
+      phoneNumber: formData.phoneNumber,
+      city: formData.city,
+      state: formData.state,
+      pincode: formData.pincode
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Signup failed');
+  }
+
+  toast({
+    title: "Welcome to ReWear! 💜",
+    description: `Your account has been created with ${data.user.points} points!`,
+  });
+
+  setFormData({
+    email: '',
+    phoneNumber: '',
+    city: '',
+    state: '',
+    pincode: '',
+    password: '',
+    confirmPassword: '',
+    agreeToTerms: false
+  });
+
+} catch (error: any) {
+  toast({
+    title: "Signup failed",
+    description: error.message,
+    variant: "destructive"
+  });
+} finally {
+  setIsLoading(false);
+}
+
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
